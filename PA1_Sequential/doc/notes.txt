@@ -1,0 +1,22 @@
+Estrutura do relatório
+
+Abstract: tema geral
+
+Introdução: descrever conteúdo do ficheiro, por secção
+
+Work env: descrição pc usado, versão gcc, flags, software profiling...
+
+K-means:
+    - Intro: pq é que é usado, np-?, lloyd's algo, ...
+    - pseudo-codigo
+
+sequential:
+    - our initial code (should it be included here?)
+    - perf analysis?
+    - papi analysis?
+
+improved sequential:
+    - optimizations
+    - optimization results
+
+conclusion: what have we learn?
