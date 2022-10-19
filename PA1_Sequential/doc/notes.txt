@@ -16,7 +16,6 @@ sequential:
     - papi analysis?
 
 improved sequential:
-    - optimizations
-    - optimization results
+    - optimizations and results
 
 conclusion: what have we learn?
