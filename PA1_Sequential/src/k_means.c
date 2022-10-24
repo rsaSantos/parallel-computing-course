@@ -3,8 +3,8 @@
 #include <math.h>
 
 // Tamanho
-int N = 100;
-int K = 10;
+int N = 10000000;
+int K = 4;
 
 // dados
 float *points;
@@ -12,29 +12,34 @@ int *new_points_cluster;
 int *old_points_cluster;
 int *new_clusters_size;
 int *old_clusters_size;
-float *clusters_centroid;
+float *clusters_center;
 
-
-//TODO: Falta fazer o gerador de pontos e testar
-
+// TODO: Falta fazer o gerador de pontos e testar
 
 // função para criar amostras
 void generate_points()
 {
     points = (float *)malloc(N * 2 * sizeof(float));
-    new_points_cluster = (float *)malloc(N * sizeof(int));
-    old_points_cluster = (float *)malloc(N * sizeof(int));
-    new_clusters_size = (float *)malloc(K * sizeof(int));
-    old_clusters_size = (float *)malloc(K * sizeof(int));
-    clusters_centroid = (float *)malloc(K * 2 * sizeof(float));
+    new_points_cluster = (int *)malloc(N * sizeof(int));
+    old_points_cluster = (int *)malloc(N * sizeof(int));
+    new_clusters_size = (int *)malloc(K * sizeof(int));
+    old_clusters_size = (int *)malloc(K * sizeof(int));
+    clusters_center = (float *)malloc(K * 2 * sizeof(float));
 
     // generate points
+    srand(10);
+
+    for (int i = 0; i < N; i++)
+    {
+        points[2 * i] = (float)rand() / RAND_MAX;
+        points[2 * i + 1] = (float)rand() / RAND_MAX;
+    }
 
     // choose clusters
     for (int i = 0; i < K; i++)
     {
-        clusters_centroid[2 * i] = points[2 * i];
-        clusters_centroid[2 * i + 1] = points[2 * i + 1];
+        clusters_center[2 * i] = points[2 * i];
+        clusters_center[2 * i + 1] = points[2 * i + 1];
     }
 }
 
@@ -45,7 +50,7 @@ void free_data()
     free(old_points_cluster);
     free(new_clusters_size);
     free(old_clusters_size);
-    free(clusters_centroid);
+    free(clusters_center);
 }
 
 // função para passar os clusters novos para os velhos
@@ -60,7 +65,6 @@ void change_clusters_new_to_old()
     for (int i = 0; i < N; i++)
     {
         old_points_cluster[i] = new_points_cluster[i];
-        new_points_cluster[i] = 0;
     }
 }
 
@@ -69,8 +73,8 @@ void calculate_centroids()
 {
     for (int i = 0; i < K; i++)
     {
-        clusters_centroid[2 * i] = 0;
-        clusters_centroid[2 * i + 1] = 0;
+        clusters_center[2 * i] = 0;
+        clusters_center[2 * i + 1] = 0;
     }
 
     for (int i = 0; i < N; i++)
@@ -78,15 +82,15 @@ void calculate_centroids()
         int cluster = new_points_cluster[i];
         int size_cluster = new_clusters_size[cluster];
 
-        clusters_centroid[2 * cluster] += points[2 * i] / size_cluster;
-        clusters_centroid[2 * cluster + 1] += points[2 * i + 1] / size_cluster;
+        clusters_center[2 * cluster] += points[2 * i] / size_cluster;
+        clusters_center[2 * cluster + 1] += points[2 * i + 1] / size_cluster;
     }
 }
 
 // calcula distancia a cluster
 float distance_points(float x1, float y1, float x2, float y2)
 {
-    return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    return sqrtf((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
 // função que calcula os clusters
@@ -96,15 +100,15 @@ void calculate_clusters()
 
     for (int i = 0; i < N; i++)
     {
-        int x1 = points[2 * i];
-        int y1 = points[2 * i + 1];
+        float x1 = points[2 * i];
+        float y1 = points[2 * i + 1];
 
         int cluster = 0;
         float distance = -1;
 
         for (int j = 0; j < K; j++)
         {
-            float distance_j = distance_points(x1, y1, clusters_centroid[2 * j], clusters_centroid[2 * j + 1]);
+            float distance_j = distance_points(x1, y1, clusters_center[2 * j], clusters_center[2 * j + 1]);
 
             if (distance_j < distance || distance < 0)
             {
@@ -140,9 +144,23 @@ int compare_clusters()
     return 0;
 }
 
+// prints
+void prints(int it)
+{
+    printf("N = %d, K = %d\n", N, K);
+
+    for (int i = 0; i < K; i++)
+    {
+        printf("Center: (%f, %f) : Size: %d\n", clusters_center[2 * i], clusters_center[2 * i + 1], new_clusters_size[i]);
+    }
+
+    printf("Iterations: %d\n", it);
+}
+
 // k means
 void k_means()
 {
+    int iterations = 1;
     generate_points();
 
     calculate_clusters();
@@ -151,7 +169,10 @@ void k_means()
     {
         calculate_centroids();
         calculate_clusters();
+        iterations++;
     }
+
+    prints(iterations);
 
     free_data();
 }
