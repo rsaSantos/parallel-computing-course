@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 
 // Tamanho
 int N = 10000000;
@@ -80,17 +79,22 @@ void calculate_centroids()
     for (int i = 0; i < N; i++)
     {
         int cluster = new_points_cluster[i];
-        int size_cluster = new_clusters_size[cluster];
 
-        clusters_center[2 * cluster] += points[2 * i] / size_cluster;
-        clusters_center[2 * cluster + 1] += points[2 * i + 1] / size_cluster;
+        clusters_center[2 * cluster] += points[2 * i];
+        clusters_center[2 * cluster + 1] += points[2 * i + 1];
+    }
+
+    for (int i = 0; i < K; i++)
+    {
+        clusters_center[2 * i] /= new_clusters_size[i];
+        clusters_center[2 * i + 1] /= new_clusters_size[i];
     }
 }
 
 // calcula distancia a cluster
 float distance_points(float x1, float y1, float x2, float y2)
 {
-    return sqrtf((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 }
 
 // função que calcula os clusters
@@ -151,7 +155,7 @@ void prints(int it)
 
     for (int i = 0; i < K; i++)
     {
-        printf("Center: (%f, %f) : Size: %d\n", clusters_center[2 * i], clusters_center[2 * i + 1], new_clusters_size[i]);
+        printf("Center: (%.3f, %.3f) : Size: %d\n", clusters_center[2 * i], clusters_center[2 * i + 1], new_clusters_size[i]);
     }
 
     printf("Iterations: %d\n", it);
@@ -160,7 +164,7 @@ void prints(int it)
 // k means
 void k_means()
 {
-    int iterations = 1;
+    int iterations = 0;
     generate_points();
 
     calculate_clusters();
