@@ -1,48 +1,98 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-// Tamanho
-int N = 10000000;
-int K = 4;
+// Number of points
+#define NPOINTS 10000000
 
-// dados
+// Number of clusters
+#define NCLUSTERS 4
+
+// Data structures
+//
+//
+// Points: Represented as an array of 2 * NPOINTS floats.
+//  Any two consecutive floats in indexes i,j such that (0 <= i < j < 2 * NPOINTS)
+//      represent a point iff i % 2 == 0 and j % 2 == 1.
+// Example:
+//  points[0] and points[1] represent the first point.
+//
 float *points;
+
+//
+// This array represents the most updated cluster assignment for each point.
+//  The value at index i represents the cluster assignment for the i-th point.
+// Example:
+//  new_points_cluster[0] represents the cluster assignment for the first point.
+//      meaning, the cluster where the first point belongs to.
+//
 int *new_points_cluster;
+
+//
+// Similar to new_points_cluster, but represents the cluster assignment for the
+//  previous iteration. These and the new_points_cluster array are used to
+//  determine if the algorithm is converging.
+//
 int *old_points_cluster;
+
+//
+// This array represents the current size of each cluster.
+//
 int *new_clusters_size;
+
+//
+// This array represents the previous size of each cluster.
+//
 int *old_clusters_size;
+
+//
+// This array represents the current center of each cluster.
+// Similar to points, any two consecutive floats in indexes i,j such that
+//  (0 <= i < j < 2 * NCLUSTERS) represent a point iff i % 2 == 0 and j % 2 == 1.
+// Example:
+//  clusters_center[0] and clusters_center[1] represent the first cluster center
+//      x and y, respectively.
+//
 float *clusters_center;
 
-// TODO: Falta fazer o gerador de pontos e testar
-
-// função para criar amostras
-void generate_points()
+/**
+ * @brief Allocates memory for the data structures.
+ *        Generates random points.
+ *        Initializes the clusters centers as the first NCLUSTERS points.
+ */
+void init_ds()
 {
-    points = (float *)malloc(N * 2 * sizeof(float));
-    new_points_cluster = (int *)malloc(N * sizeof(int));
-    old_points_cluster = (int *)malloc(N * sizeof(int));
-    new_clusters_size = (int *)malloc(K * sizeof(int));
-    old_clusters_size = (int *)malloc(K * sizeof(int));
-    clusters_center = (float *)malloc(K * 2 * sizeof(float));
+    // Allocate memory for all the data structures.
+    points = (float *)malloc(NPOINTS * 2 * sizeof(float));
+    new_points_cluster = (int *)malloc(NPOINTS * sizeof(int));
+    old_points_cluster = (int *)malloc(NPOINTS * sizeof(int));
+    new_clusters_size = (int *)malloc(NCLUSTERS * sizeof(int));
+    old_clusters_size = (int *)malloc(NCLUSTERS * sizeof(int));
+    clusters_center = (float *)malloc(NCLUSTERS * 2 * sizeof(float));
 
-    // generate points
+    // Random seed of 10 for reproducibility.
     srand(10);
 
-    for (int i = 0; i < N; i++)
+    // Index variable.
+    int i;
+
+    // Generate random points and store them in the points array.
+    for (i = 0; i < NPOINTS; i++)
     {
         points[2 * i] = (float)rand() / RAND_MAX;
         points[2 * i + 1] = (float)rand() / RAND_MAX;
     }
 
-    // choose clusters
-    for (int i = 0; i < K; i++)
+    // Initialize the clusters centers as the first NCLUSTERS points.
+    for (i = 0; i < NCLUSTERS; i++)
     {
         clusters_center[2 * i] = points[2 * i];
         clusters_center[2 * i + 1] = points[2 * i + 1];
     }
 }
 
-// free
+/**
+ * @brief Free previously allocated memmory.
+ */
 void free_data()
 {
     free(new_points_cluster);
@@ -52,68 +102,129 @@ void free_data()
     free(clusters_center);
 }
 
-// função para passar os clusters novos para os velhos
+/**
+ * @brief Updates the old cluster sizes with the new cluster sizes.
+ *        Updates the old cluster points with the new cluster points.
+ */
 void change_clusters_new_to_old()
 {
-    for (int i = 0; i < K; i++)
+    // Index variable.
+    int i;
+
+    // Update the size of each cluster.
+    // Set the new size of each cluster to 0.
+    for (i = 0; i < NCLUSTERS; i++)
     {
         old_clusters_size[i] = new_clusters_size[i];
         new_clusters_size[i] = 0;
     }
 
-    for (int i = 0; i < N; i++)
+    // Update the points of the old cluster.
+    // No need to set the new points to other value, since they will be overwritten.
+    for (i = 0; i < NPOINTS; i++)
     {
         old_points_cluster[i] = new_points_cluster[i];
     }
 }
 
-// função que calcula centroide
+/**
+ * @brief Calculates the new clusters centers.
+ *
+ */
 void calculate_centroids()
 {
-    for (int i = 0; i < K; i++)
+    // Index variable.
+    int i;
+
+    // Set the new clusters centers x and y to 0.
+    for (i = 0; i < NCLUSTERS; i++)
     {
         clusters_center[2 * i] = 0;
         clusters_center[2 * i + 1] = 0;
     }
 
-    for (int i = 0; i < N; i++)
+    // Sum all the x and y coordinates of the points in each cluster.
+    for (i = 0; i < NPOINTS; i++)
     {
+        // Get the cluster assignment of the i-th point.
         int cluster = new_points_cluster[i];
 
+        // Sum the x and y coordinates of the i-th point to the cluster center.
         clusters_center[2 * cluster] += points[2 * i];
         clusters_center[2 * cluster + 1] += points[2 * i + 1];
     }
 
-    for (int i = 0; i < K; i++)
+    // Calculate the new clusters centers.
+    for (i = 0; i < NCLUSTERS; i++)
     {
+        // Divide the sum of the x and y coordinates by the number of points in the cluster.
+        // This will give the new cluster center.
         clusters_center[2 * i] /= new_clusters_size[i];
         clusters_center[2 * i + 1] /= new_clusters_size[i];
     }
 }
 
-// calcula distancia a cluster
-float distance_points(float x1, float y1, float x2, float y2)
+/**
+ * @brief Calculates the squared distance between two points.
+ *        There is no need to calculate the square root of the distance,
+ *         since the square root of a number is monotonic.
+ *        This means that the square root of a number is always greater or equal
+ *         to the square root of another number.
+ *
+ * @param x1 The x coordinate of the first point.
+ * @param y1 The y coordinate of the first point.
+ * @param x2 The x coordinate of the second point.
+ * @param y2 The y coordinate of the second point.
+ *
+ * @return float The squared distance between the two points.
+ */
+float squared_distance(float x1, float y1, float x2, float y2)
 {
     return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
 }
 
-// função que calcula os clusters
+/**
+ * @brief Calculates the new cluster assignment for each point.
+ *
+ */
 void calculate_clusters()
 {
+    // Index variable.
+    int i, j;
+
+    // Update the previous cluster assignment.
+    // The values of the "new cluster assignment" will be overwritten.
     change_clusters_new_to_old();
 
-    for (int i = 0; i < N; i++)
+    // Iterate through all the points.
+    for (i = 0; i < NPOINTS; i++)
     {
+        // Get the x and y coordinates of the i-th point.
         float x1 = points[2 * i];
         float y1 = points[2 * i + 1];
 
-        int cluster = 0;
+        // Variable that will store the cluster assignment of the i-th point.
+        // To better check errors, the point is "assigned" to cluster -1 (invalid).
+        int cluster = -1;
+
+        // Indicates that the distance between a point and a cluster center
+        //  was not yet calculated.
         float distance = -1;
 
-        for (int j = 0; j < K; j++)
+        for (j = 0; j < NCLUSTERS; j++)
         {
-            float distance_j = distance_points(x1, y1, clusters_center[2 * j], clusters_center[2 * j + 1]);
+            // Get the x and y coordinates of the j-th cluster center.
+            float x2 = clusters_center[2 * j];
+            float y2 = clusters_center[2 * j + 1];
 
+            // Calculate the squared distance between the i-th point and the
+            //  j-th cluster center.
+            float distance_j = squared_distance(x1, y1, x2, y2);
+
+            // Check if the i-th point is closer to the j-th cluster center
+            //  than the previous closest cluster center.
+            // If the distance is -1, then this is the first cluster center
+            //  checked and the i-th point is automatically assigned to it.
             if (distance_j < distance || distance < 0)
             {
                 cluster = j;
@@ -121,68 +232,128 @@ void calculate_clusters()
             }
         }
 
+        // Update the cluster size that was assigned to the i-th point.
         new_clusters_size[cluster]++;
+
+        // Update the cluster assignment of the i-th point.
         new_points_cluster[i] = cluster;
     }
 }
 
-// compara clusters antigos com novos para ver se alterou
-int compare_clusters()
+/**
+ * @brief Checks if the clusters have changed.
+ *        It first checks if the number of points in each cluster has changed.
+ *        If the number of points in each cluster has not changed, then it checks
+ *        if the points in each cluster have changed.
+ *
+ * @return int 1 if the clusters have changed, 0 otherwise.
+ */
+int compare_clusters(int iterations)
 {
-    for (int i = 0; i < K; i++)
+    // Index variable.
+    int i;
+
+    // Return variable
+    int changed = 0;
+
+    // Check if the clusters size have changed.
+    // If they have changed, then the clusters have changed.
+    // And there is no need to check the points in each cluster.
+    for (i = 0; (i < NCLUSTERS) && (new_clusters_size[i] == old_clusters_size[i]); i++)
     {
-        if (new_clusters_size[i] != old_clusters_size[i])
+    };
+
+    // Check if clusters size have changed.
+    // If not all iterations of the for loop have been executed,
+    //  then the clusters size have changed.
+    if (i < NCLUSTERS)
+    {
+        changed = 1;
+    }
+    else
+    {
+        // Check if the points in each cluster have changed.
+        for (i = 0; (i < NPOINTS) && (new_points_cluster[i] == old_points_cluster[i]); i++)
         {
-            return -1;
+        };
+
+        // If not all iterations of the for loop have been executed,
+        //  then the points in each cluster have changed.
+        if (i < NPOINTS)
+        {
+            changed = 1;
         }
     }
 
-    for (int i = 0; i < N; i++)
-    {
-        if (new_points_cluster[i] != old_points_cluster[i])
-        {
-            return -1;
-        }
-    }
-
-    return 0;
+    return changed;
 }
 
-// prints
-void prints(int it)
+/**
+ * @brief Prints the results of the k-means algorithm.
+ *        Prints each cluster center, its size and the number of iterations.
+ */
+void print_results(int iterations)
 {
-    printf("N = %d, K = %d\n", N, K);
+    // Index variable.
+    int i;
 
-    for (int i = 0; i < K; i++)
+    // Number of points and clusters.
+    printf("NPOINTS = %d, NCLUSTERS = %d\n", NPOINTS, NCLUSTERS);
+
+    // Center and number of points in each cluster.
+    for (i = 0; i < NCLUSTERS; i++)
     {
         printf("Center: (%.3f, %.3f) : Size: %d\n", clusters_center[2 * i], clusters_center[2 * i + 1], new_clusters_size[i]);
     }
 
-    printf("Iterations: %d\n", it);
+    // Number of iterations.
+    printf("Iterations: %d\n", iterations);
 }
 
-// k means
-void k_means()
+/**
+ * @brief K-means algorithm.
+ *       The algorithm will stop when the clusters stop changing.
+ *
+ * @return int The number of iterations.
+ */
+int k_means()
 {
-    int iterations = 0;
-    generate_points();
+    // Number of iterations.
+    int iterations;
 
+    // Calculate the clusters for the first time.
     calculate_clusters();
 
-    while (compare_clusters() == -1)
+    // Keep calculating the clusters until they stop changing.
+    for (iterations = 0; compare_clusters(iterations) != 0; iterations++)
     {
         calculate_centroids();
         calculate_clusters();
-        iterations++;
     }
 
-    prints(iterations);
-
-    free_data();
+    return iterations;
 }
 
+/**
+ * @brief Main function.
+ *        It initializes the data and calls the k-means algorithm.
+ *        It also prints the results and frees the allocated memory.
+ *
+ * @return int 0 if the program finishes successfully.
+ */
 int main()
 {
-    k_means();
+    // Initialize the data structures.
+    init_ds();
+
+    // Call the k-means algorithm.
+    int iterations = k_means();
+
+    // Show the results.
+    print_results(iterations);
+
+    // Free the allocated memory.
+    free_data();
+
     return 0;
 }
