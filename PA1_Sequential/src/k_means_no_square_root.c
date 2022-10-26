@@ -166,10 +166,6 @@ void calculate_centroids()
 
 /**
  * @brief Calculates the squared distance between two points.
- *        There is no need to calculate the square root of the distance,
- *         since the square root of a number is monotonic.
- *        This means that the square root of a number is always greater or equal
- *         to the square root of another number.
  *
  * @param x1 The x coordinate of the first point.
  * @param y1 The y coordinate of the first point.
