@@ -4,7 +4,7 @@ SRC = src/
 INCLUDES = include/
 EXEC = k_means
 
-CFLAGS = -std=c99
+CFLAGS = -std=c99 -O2
 
 .DEFAULT_GOAL = k_means
 
