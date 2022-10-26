@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 // Number of points
 #define NPOINTS 10000000
@@ -165,22 +166,18 @@ void calculate_centroids()
 }
 
 /**
- * @brief Calculates the squared distance between two points.
- *        There is no need to calculate the square root of the distance,
- *         since the square root of a number is monotonic.
- *        This means that the square root of a number is always greater or equal
- *         to the square root of another number.
+ * @brief Calculates the euclidian distance between two points.
  *
  * @param x1 The x coordinate of the first point.
  * @param y1 The y coordinate of the first point.
  * @param x2 The x coordinate of the second point.
  * @param y2 The y coordinate of the second point.
  *
- * @return float The squared distance between the two points.
+ * @return float The euclidian distance between the two points.
  */
-float squared_distance(float x1, float y1, float x2, float y2)
+float euclidian_distance(float x1, float y1, float x2, float y2)
 {
-    return (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1);
+    return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
 
 /**
@@ -219,7 +216,7 @@ void calculate_clusters()
 
             // Calculate the squared distance between the i-th point and the
             //  j-th cluster center.
-            float distance_j = squared_distance(x1, y1, x2, y2);
+            float distance_j = euclidian_distance(x1, y1, x2, y2);
 
             // Check if the i-th point is closer to the j-th cluster center
             //  than the previous closest cluster center.
@@ -350,7 +347,7 @@ int main()
     int iterations = k_means();
 
     // Show the results.
-    // print_results(iterations);
+    print_results(iterations);
 
     // Free the allocated memory.
     free_data();
