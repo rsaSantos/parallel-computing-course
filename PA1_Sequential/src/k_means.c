@@ -347,7 +347,7 @@ int main()
     int iterations = k_means();
 
     // Show the results.
-    print_results(iterations);
+    // print_results(iterations);
 
     // Free the allocated memory.
     free_data();
