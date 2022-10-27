@@ -244,7 +244,7 @@ void calculate_clusters()
  *
  * @return int 1 if the clusters have changed, 0 otherwise.
  */
-int compare_clusters(int iterations)
+int compare_clusters()
 {
     // Index variable.
     int i;
@@ -321,7 +321,7 @@ int k_means()
     calculate_clusters();
 
     // Keep calculating the clusters until they stop changing.
-    for (iterations = 0; compare_clusters(iterations) != 0; iterations++)
+    for (iterations = 0; compare_clusters() != 0; iterations++)
     {
         calculate_centroids();
         calculate_clusters();
