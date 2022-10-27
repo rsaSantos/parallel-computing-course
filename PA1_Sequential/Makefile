@@ -8,7 +8,7 @@ EXEC_NEW_DS = k_means_new_ds
 EXEC_MERGE = k_means_merge
 
 # TODO: vectorize? loop unroll»?
-CFLAGS = -std=c99 -O2 -funroll-all-loops
+CFLAGS = -std=c99 -O2 -Wall -funroll-loops
 
 .DEFAULT_GOAL = k_means
 
