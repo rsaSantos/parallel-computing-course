@@ -96,6 +96,7 @@ void init_ds()
  */
 void free_data()
 {
+    free(points);
     free(new_points_cluster);
     free(old_points_cluster);
     free(new_clusters_size);
@@ -347,7 +348,7 @@ int main()
     int iterations = k_means();
 
     // Show the results.
-    // print_results(iterations);
+    print_results(iterations);
 
     // Free the allocated memory.
     free_data();
