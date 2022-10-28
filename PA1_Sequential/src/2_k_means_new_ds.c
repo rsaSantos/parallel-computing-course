@@ -10,8 +10,11 @@
 // Data structures
 //
 //
-
-// TODO: align?
+//
+// This struct represents a collection of points.
+// Arrays x and y represent the position of each point.
+// Arrays new and old help us store something related to each point.
+// Arrays new_x and new_y are used to calculate new values for the arrays x and y (not always needed).
 struct
 {
     float *x;
@@ -22,8 +25,17 @@ struct
     float *new_y;
 } typedef points;
 
+
+// Pointer for all the points with struct points, for the struct points:
+// Arrays x and y will be used to store the points.
+// Arrays new and old will store the cluster of the point on the present and previous iteration of the algorithm, respectively.
+// Arrays new_x and new_y are not needed.
 points *_points_;
 
+// Pointer for all the cluster with struct points, for the struct points:
+// Arrays x and y will be used to store the clusters center.
+// Arrays new and old will store the the number of points in each cluster on the present and previous iteration of the algorithm, respectively.
+// Arrays new_x and new_y are used to calculate the center of each cluster  in the next iteration.
 points *clusters_center;
 
 /**
