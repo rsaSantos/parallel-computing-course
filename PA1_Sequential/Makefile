@@ -6,8 +6,7 @@ EXEC = k_means
 EXEC_NO_SQUARE_ROOT = k_means_no_square_root
 EXEC_NEW_DS = k_means_new_ds
 
-# TODO: vectorize? loop unroll»?
-CFLAGS = -std=c99 -O2 -Wall #-funroll-loops
+CFLAGS = -std=c99 -O2 -Wall -funroll-loops -ftree-vectorize -msse4
 
 .DEFAULT_GOAL = k_means
 
