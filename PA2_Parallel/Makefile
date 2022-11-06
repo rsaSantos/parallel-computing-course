@@ -7,6 +7,8 @@ THREADS = 4 # TODO: DEFINE OPTIMAL NUMBER OF THREADS
 CFLAGS = -std=c99 -O2 -Wall
 .DEFAULT_GOAL = k_means
 
+include .env
+
 k_means: $(SRC)k_means.c $(BIN)utils.o
 	$(CC) $(CFLAGS) $(SRC)k_means.c $(BIN)utils.o -o $(BIN)$(EXEC)
 
@@ -20,4 +22,4 @@ runseq:
 	./$(BIN)$(EXEC) 10000000 $(CP_CLUSTERS)
 
 runpar:
-	./$(BIN)$(EXEC) 10000000 $(CP_CLUSTERS) $THREADS
+	./$(BIN)$(EXEC) 10000000 $(CP_CLUSTERS) $(THREADS)
