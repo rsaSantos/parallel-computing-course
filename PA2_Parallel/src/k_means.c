@@ -25,7 +25,6 @@ struct
     float *new_y;
 } typedef points;
 
-
 // Pointer for all the points with struct points, for the struct points:
 // Arrays x and y will be used to store the points.
 // Arrays new and old will store the cluster of the point on the present and previous iteration of the algorithm, respectively.
@@ -303,10 +302,38 @@ int k_means()
  *        It initializes the data and calls the k-means algorithm.
  *        It also prints the results and frees the allocated memory.
  *
+ * Needed arguments:
+ * - Number of points.
+ * - Number of clusters.
+ * - Number of threads.
+ *
  * @return int 0 if the program finishes successfully.
  */
-int main()
+int main(int argc, char *argv[])
 {
+
+    // Variables to store the number of points, clusters and threads.
+    int n_points, n_clusters, n_threads = 0;
+
+    // Check if the number of arguments is correct.
+    if (argc < 3)
+    {
+        printf("Usage: %s <number of points> <number of clusters> <number of threads>", argv[0]);
+        exit(1);
+    }
+    else
+    {
+        n_points = atoi(argv[1]);
+        n_clusters = atoi(argv[2]);
+
+        if (argc == 4)
+        {
+            n_threads = atoi(argv[3]);
+        }
+        // Print command line arguments.
+        printf("Points: %d | Clusters: %d | Threads: %d \n", n_points, n_clusters, n_threads);
+    }
+
     // Initialize the data structures.
     init_ds();
 
