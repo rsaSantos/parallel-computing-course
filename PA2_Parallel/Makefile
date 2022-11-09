@@ -4,7 +4,7 @@ SRC = src/
 INCLUDES = include/
 EXEC = k_means
 THREADS = 4 # TODO: DEFINE OPTIMAL NUMBER OF THREADS
-CFLAGS = -std=c99 -O2 -Wall
+CFLAGS = -std=c99 -O2 -Wall -fopenmp
 .DEFAULT_GOAL = k_means
 
 include .env
