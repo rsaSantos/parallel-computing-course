@@ -9,11 +9,8 @@ CFLAGS = -std=c99 -O2 -Wall
 
 include .env
 
-k_means: $(SRC)k_means.c $(BIN)utils.o
-	$(CC) $(CFLAGS) $(SRC)k_means.c $(BIN)utils.o -o $(BIN)$(EXEC)
-
-$(BIN)utils.o: $(SRC)utils.c $(INCLUDES)utils.h
-	$(CC) $(CFLAGS) -c $(SRC)utils.c -o $(BIN)utils.o
+k_means: $(SRC)k_means.c
+	$(CC) $(CFLAGS) $(SRC)k_means.c -o $(BIN)$(EXEC)
 
 clean:
 	rm -r bin/*
