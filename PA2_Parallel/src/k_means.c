@@ -129,6 +129,18 @@ void calculate_centroids()
     // Index variable.
     int i;
 
+    for ( i = 0; i < NPOINTS; i++)
+    {   
+        int cluster = _points_->new[i];
+
+        // Update the cluster size that was assigned to the i-th point.
+        clusters_center->new[cluster]++;
+        //
+        clusters_center->new_x[cluster] += _points_->x[i];
+        clusters_center->new_y[cluster] += _points_->y[i];
+    }
+    
+
     // Calculate the new clusters centers.
     for (i = 0; i < NCLUSTERS; i++)
     {
@@ -191,15 +203,9 @@ void calculate_clusters()
             }
         }
 
-        // Update the cluster size that was assigned to the i-th point.
-        clusters_center->new[cluster]++;
-
         // Update the cluster assignment of the i-th point.
         _points_->new[i] = cluster;
-
-        //
-        clusters_center->new_x[cluster] += _points_->x[i];
-        clusters_center->new_y[cluster] += _points_->y[i];
+  
     }
 }
 
