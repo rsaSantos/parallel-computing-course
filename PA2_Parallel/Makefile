@@ -3,8 +3,8 @@ BIN = bin/
 SRC = src/
 INCLUDES = include/
 EXEC = k_means
-THREADS = 4 # TODO: DEFINE OPTIMAL NUMBER OF THREADS
-CFLAGS = -std=c99 -O2 -Wall -fopenmp
+THREADS = 4
+CFLAGS = -std=c99 -O2 -Wall -funroll-loops -fopenmp
 .DEFAULT_GOAL = k_means
 
 include .env
