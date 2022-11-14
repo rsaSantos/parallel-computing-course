@@ -5,18 +5,19 @@ INCLUDES = include/
 EXEC = k_means
 THREADS = 4
 CFLAGS = -std=c99 -O2 -Wall -funroll-loops -fopenmp
-.DEFAULT_GOAL = k_means
 
 include .env
 
-k_means: $(SRC)k_means.c
-	$(CC) $(CFLAGS) $(SRC)k_means.c -o $(BIN)$(EXEC)
+k_means:
+	$(CC) $(CFLAGS) $(SRC)k_means_old.c -o $(BIN)$(EXEC)_old
+	$(CC) $(CFLAGS) $(SRC)k_means_new.c -o $(BIN)$(EXEC)_new
 
 clean:
 	rm -r bin/*
 
-runseq:
-	./$(BIN)$(EXEC) 10000000 $(CP_CLUSTERS)
+runpar_old:
+	./$(BIN)$(EXEC)_old 10000000 $(CP_CLUSTERS) $(THREADS)
 
-runpar:
-	./$(BIN)$(EXEC) 10000000 $(CP_CLUSTERS) $(THREADS)
+runpar_new:
+	./$(BIN)$(EXEC)_new 10000000 $(CP_CLUSTERS) $(THREADS)
+
