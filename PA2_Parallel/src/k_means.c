@@ -134,7 +134,10 @@ void calculate_centroids(int n_points, int n_clusters)
     float *new_y = clusters_center->new_y;
     int *new = clusters_center->new;
 
-#pragma omp parallel for reduction(+:new_x[:n_clusters]) reduction(+:new_y[:n_clusters]) reduction(+:new[:n_clusters])
+#pragma omp parallel for reduction(+                                                                 \
+                                   : new_x[:n_clusters]) reduction(+                                 \
+                                                                   : new_y[:n_clusters]) reduction(+ \
+                                                                                                   : new[:n_clusters])
     for (i = 0; i < n_points; i++)
     {
         int cluster = _points_->new[i];
@@ -343,10 +346,13 @@ int main(int argc, char *argv[])
         n_points = atoi(argv[1]);
         n_clusters = atoi(argv[2]);
 
-        omp_set_num_threads(1);
         if (argc == 4)
         {
             omp_set_num_threads(atoi(argv[3]));
+        }
+        else
+        {
+            omp_set_num_threads(1);
         }
         // Print command line arguments.
         // printf("Points: %d | Clusters: %d | Threads: %d \n", n_points, n_clusters, n_threads);
