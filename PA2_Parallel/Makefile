@@ -3,13 +3,11 @@ BIN = bin/
 SRC = src/
 INCLUDES = include/
 EXEC = k_means
-THREADS = 4 # OPTIMAL VALUE?
+THREADS = 20
 
-CFLAGS = -std=c99 -O2 -Wall -funroll-loops -fopenmp # LOOP UNROLL FLAG?
+CFLAGS = -std=c99 -O2 -Wall -funroll-loops -fopenmp
 
 .DEFAULT_GOAL = k_means
-
-CP_CLUSTERS = 4 # REMOVE
 
 k_means:
 	$(CC) $(CFLAGS) $(SRC)$(EXEC).c -o $(BIN)$(EXEC)

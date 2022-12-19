@@ -280,7 +280,7 @@ void print_results(int n_points, int n_clusters, int iterations)
     int i;
 
     // Number of points and clusters.
-    printf("NPOINTS = %d, NCLUSTERS = %d\n", n_points, n_clusters);
+    printf("N = %d, K = %d\n", n_points, n_clusters);
 
     // Center and number of points in each cluster.
     for (i = 0; i < n_clusters; i++)
