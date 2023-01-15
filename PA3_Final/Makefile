@@ -5,7 +5,7 @@ INCLUDES = include/
 EXEC = k_means
 THREADS = 20
 
-CFLAGS = -std=c99 -O2 -Wall -funroll-loops -fopenmp
+CFLAGS = -std=c99 -O2 -Wall -g -fno-omit-frame-pointer -funroll-loops -fopenmp
 
 .DEFAULT_GOAL = k_means
 

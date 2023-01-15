@@ -298,7 +298,7 @@ int k_means(int n_points, int n_clusters)
     calculate_clusters(n_points, n_clusters);
 
     // Keep calculating the clusters until they stop changing.
-    for (iterations = 0; iterations < 20 && compare_clusters(n_points, n_clusters); iterations++)
+    for (iterations = 0; iterations < 20 && compare_clusters(n_points, n_clusters) == 1; iterations++)
     {
         calculate_centroids(n_points, n_clusters);
         calculate_clusters(n_points, n_clusters);
